@@ -1,0 +1,98 @@
+// Pembuat : Vincent Christian Siregar
+// NIM : 16520012
+// Kelas : PRD K16
+
+int buttonState = 0;   // deklarasi keadaan tombol sekarang
+int buttonBefore = 0;  // deklarasi keadaan tombol sebelum
+int counter = 0;       // deklarasi mode rangkaian
+unsigned long timeBefore = 0; // deklarasi waktu saat LED berubah keadaan
+int ledState; // deklarasi waktu sesudah LED berubah keadaan
+int interval; // deklaasi jarak waktu antar kedap - kedip
+
+void setup()  //Persiapan
+{
+  pinMode(7, INPUT);     // setting input ke pin nomor 7
+  pinMode(13, OUTPUT);   // setting output (LED) ke pin nomor 13
+  digitalWrite(13, LOW); //Lampu mati pada keadaan awal
+}
+
+void loop()
+{
+  Serial.begin(9600);
+  buttonState = digitalRead(7);
+  if ((buttonState == HIGH)&&(buttonState != buttonBefore)) {
+    if (counter != 3){
+      delay(5);
+      counter = counter + 1;
+      buttonBefore = buttonState;
+    }
+    else {
+      delay(5);
+      counter = 0;
+      buttonBefore = buttonState;
+    }
+  }
+  else if (buttonState == LOW){
+    if (counter == 0) {
+      digitalWrite(13, LOW);
+      buttonBefore = 0;
+    }
+    else if (counter == 1) {
+      unsigned long timeNow = millis();
+      if (timeNow - timeBefore >= 500){
+        timeBefore =timeNow;
+        if (ledState == 0){
+          ledState = 1;
+        }
+        else {
+          ledState = 0;
+        }
+        digitalWrite(13, ledState);
+        buttonBefore = 0;
+      }
+    }
+    else if (counter == 2){
+      unsigned long timeNow = millis();
+      if (ledState == 0) {
+        interval = 1000;
+      }
+      else{
+        interval = 500;
+      }
+      Serial.println(ledState);
+      if (timeNow - timeBefore >= interval){
+        timeBefore =timeNow;
+        if (ledState == 0){
+          ledState = 1;
+        }
+        else {
+          ledState = 0;
+        }
+      digitalWrite(13, ledState);
+      buttonBefore = 0;
+      }
+    }
+    else if (counter == 3){
+      unsigned long timeNow = millis();
+      if (ledState == 0) {
+        interval = 1500;
+      }
+      else{
+        interval = 500;
+      }
+      Serial.println(ledState);
+      if (timeNow - timeBefore >= interval){
+        timeBefore =timeNow;
+        if (ledState == 0){
+          ledState = 1;
+        }
+        else {
+          ledState = 0;
+        }
+      digitalWrite(13, ledState);
+      buttonBefore = 0;
+      }
+    }
+  }
+  delay(10); 
+}
